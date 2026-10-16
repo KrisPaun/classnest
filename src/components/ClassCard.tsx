@@ -1,21 +1,34 @@
 import Link from "next/link";
 import { ClassItem, getCategory, getCity } from "@/data/classes";
 import { formatDuration, formatPrice } from "@/lib/format";
+import { listPhotoUrls } from "@/lib/photos";
 
-export default function ClassCard({ item }: { item: ClassItem }) {
+export default async function ClassCard({ item }: { item: ClassItem }) {
   const category = getCategory(item.category);
   const city = getCity(item.city);
+  const [cover] = await listPhotoUrls(item.slug);
 
   return (
     <Link
       href={`/classes/${item.slug}`}
       className="group block overflow-hidden rounded-2xl border border-line bg-white transition hover:shadow-lg"
     >
-      <div
-        className={`flex h-48 items-center justify-center bg-gradient-to-br ${item.gradient} text-6xl transition group-hover:scale-105`}
-      >
-        <span aria-hidden>{item.emoji}</span>
-      </div>
+      {cover ? (
+        <div className="h-48 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={cover}
+            alt={item.title}
+            className="h-full w-full object-cover transition group-hover:scale-105"
+          />
+        </div>
+      ) : (
+        <div
+          className={`flex h-48 items-center justify-center bg-gradient-to-br ${item.gradient} text-6xl transition group-hover:scale-105`}
+        >
+          <span aria-hidden>{item.emoji}</span>
+        </div>
+      )}
       <div className="p-4">
         <div className="flex items-center justify-between text-xs text-muted">
           <span>

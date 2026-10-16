@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HostForm from "@/components/HostForm";
 
 const benefits = [
@@ -20,7 +21,15 @@ export default function HostPage() {
           ))}
         </ul>
       </div>
-      <HostForm />
+      <div className="space-y-4">
+        <HostForm />
+        <Link
+          href="/host/photos"
+          className="block rounded-2xl border border-line bg-white p-4 text-center text-sm hover:border-accent"
+        >
+          Веќе сте домаќин? <span className="text-accent">Управувајте со фотографиите →</span>
+        </Link>
+      </div>
     </div>
   );
 }

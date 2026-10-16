@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import BookingWidget from "@/components/BookingWidget";
+import HostAvatar from "@/components/HostAvatar";
+import PhotoGallery from "@/components/PhotoGallery";
+import { listPhotoUrls } from "@/lib/photos";
+import { getHostByName } from "@/data/hosts";
 import { getCategory, getCity, getClass } from "@/data/classes";
 import { formatDuration, upcomingDates } from "@/lib/format";
 
@@ -14,6 +18,8 @@ export default async function ClassPage({ params }: { params: Promise<{ slug: st
 
   const category = getCategory(item.category);
   const city = getCity(item.city);
+  const host = getHostByName(item.host);
+  const photos = await listPhotoUrls(item.slug);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -21,11 +27,12 @@ export default async function ClassPage({ params }: { params: Promise<{ slug: st
         ← Назад
       </Link>
 
-      <div
-        className={`mt-4 flex h-72 items-center justify-center rounded-3xl bg-gradient-to-br ${item.gradient} text-8xl`}
-      >
-        <span aria-hidden>{item.emoji}</span>
-      </div>
+      <PhotoGallery
+        photos={photos}
+        title={item.title}
+        emoji={item.emoji}
+        gradient={item.gradient}
+      />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
@@ -52,15 +59,21 @@ export default async function ClassPage({ params }: { params: Promise<{ slug: st
           <p className="mt-2 text-muted">📍 {item.location}</p>
 
           <h2 className="mt-8 text-xl font-semibold">Вашиот домаќин</h2>
-          <div className="mt-3 flex items-start gap-4 rounded-2xl border border-line bg-white p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-lg font-semibold text-accent">
-              {item.host[0]}
-            </div>
-            <div>
-              <p className="font-semibold">{item.host}</p>
-              <p className="text-sm text-muted">{item.hostBio}</p>
-            </div>
-          </div>
+          {host ? (
+            <Link
+              href={`/hosts/${host.slug}`}
+              className="mt-3 flex items-start gap-4 rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
+            >
+              <HostAvatar host={host} />
+              <div>
+                <p className="font-semibold">{item.host}</p>
+                <p className="text-sm text-muted">{item.hostBio}</p>
+                <p className="mt-2 text-sm text-accent">Погледни профил →</p>
+              </div>
+            </Link>
+          ) : (
+            <p className="mt-3 font-semibold">{item.host}</p>
+          )}
         </div>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">

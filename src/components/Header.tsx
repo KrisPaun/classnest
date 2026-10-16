@@ -11,6 +11,9 @@ export default function Header() {
           <Link href="/classes" className="hover:text-accent">
             Сите искуства
           </Link>
+          <Link href="/hosts" className="hover:text-accent">
+            Домаќини
+          </Link>
           <Link
             href="/host"
             className="rounded-full border border-ink px-4 py-2 hover:bg-ink hover:text-cream"
