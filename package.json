@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "seed:photos": "node scripts/seed-photos.mjs",
+    "host:create": "node scripts/create-host-account.mjs"
   },
   "dependencies": {
     "next": "^15.5.0",

@@ -1,16 +1,16 @@
 import { promises as fs } from "fs";
-import { getClass } from "@/data/classes";
-import { MIME_BY_EXT, isValidPhotoName, photoPath } from "@/lib/photos";
+import { MIME_BY_EXT, isValidKey, isValidPhotoName, photoPath } from "@/lib/photos";
 
+// [slug] е клуч: slug на искуство или "host-<slug>" за профилни фотографии.
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string; name: string }> },
 ) {
-  const { slug, name } = await params;
-  if (!getClass(slug) || !isValidPhotoName(name)) return new Response("Not found", { status: 404 });
+  const { slug: key, name } = await params;
+  if (!isValidKey(key) || !isValidPhotoName(name)) return new Response("Not found", { status: 404 });
 
   try {
-    const data = await fs.readFile(photoPath(slug, name));
+    const data = await fs.readFile(photoPath(key, name));
     const ext = name.split(".").pop() ?? "";
     return new Response(new Uint8Array(data), {
       headers: {

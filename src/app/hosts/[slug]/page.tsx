@@ -2,8 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ClassCard from "@/components/ClassCard";
 import HostAvatar from "@/components/HostAvatar";
-import { getCity } from "@/data/classes";
-import { getHost, getHostClasses, hosts, hostStats } from "@/data/hosts";
+import PhotoGallery from "@/components/PhotoGallery";
+import { getCategory, getCity } from "@/data/classes";
+import { getHostClasses, hostStats } from "@/data/hosts";
+import { months } from "@/lib/format";
+import { getHostAny } from "@/lib/host-directory";
+import { hostPhotoKey, listPhotoUrls } from "@/lib/photos";
 
 const greenStyle = "bg-green-100 text-green-800";
 
@@ -13,18 +17,24 @@ const badgeStyles: Record<string, string> = {
   "Традиционален занает": "bg-amber-100 text-amber-800",
 };
 
-export function generateStaticParams() {
-  return hosts.map((h) => ({ slug: h.slug }));
-}
+// Нови домаќини се регистрираат во живо, па профилите не се генерираат статично.
+export const dynamic = "force-dynamic";
 
 export default async function HostProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const host = getHost(slug);
+  const host = await getHostAny(slug);
   if (!host) notFound();
 
   const city = getCity(host.city);
+  const category = getCategory(host.category ?? "");
   const list = getHostClasses(host);
   const stats = hostStats(host);
+  const photos = await listPhotoUrls(hostPhotoKey(host.slug));
+  const links = [
+    host.website && { label: "Веб-страница", url: host.website },
+    host.instagram && { label: "Instagram", url: host.instagram },
+    host.facebook && { label: "Facebook", url: host.facebook },
+  ].filter((l): l is { label: string; url: string } => Boolean(l));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -36,8 +46,10 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
         <HostAvatar host={host} size="lg" />
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{host.name}</h1>
+          {host.businessName && <p className="mt-1 font-medium">{host.businessName}</p>}
           <p className="mt-1 text-muted">
-            📍 {city?.name} · Домаќин од {host.since}
+            📍 {city?.name}
+            {category ? ` · ${category.name}` : ""} · Домаќин од {host.since}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {host.badges.map((b) => (
@@ -53,7 +65,7 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
         <dl className="grid grid-cols-3 gap-4 text-center sm:text-left">
           <div>
             <dt className="text-xs text-muted">Оцена</dt>
-            <dd className="text-xl font-semibold">★ {stats.rating.toFixed(1)}</dd>
+            <dd className="text-xl font-semibold">{stats.reviews > 0 ? `★ ${stats.rating.toFixed(1)}` : "—"}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted">Рецензии</dt>
@@ -66,30 +78,42 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
         </dl>
       </section>
 
+      {photos.length > 0 && (
+        <PhotoGallery photos={photos} title={host.name} emoji="" gradient={host.gradient} />
+      )}
+
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px]">
         <div>
           <h2 className="text-xl font-semibold">За {host.name.split(" ")[0]}</h2>
-          <p className="mt-3 leading-relaxed text-muted">{host.story}</p>
+          <p className="mt-3 whitespace-pre-line leading-relaxed text-muted">{host.story}</p>
 
           <h2 className="mt-10 text-xl font-semibold">Искуства од {host.name.split(" ")[0]}</h2>
-          <div className="mt-4 grid gap-6 sm:grid-cols-2">
-            {list.map((c) => (
-              <ClassCard key={c.slug} item={c} />
-            ))}
-          </div>
+          {list.length > 0 ? (
+            <div className="mt-4 grid gap-6 sm:grid-cols-2">
+              {list.map((c) => (
+                <ClassCard key={c.slug} item={c} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-muted">Сè уште нема објавени искуства.</p>
+          )}
 
-          <h2 className="mt-10 text-xl font-semibold">Што велат гостите</h2>
-          <div className="mt-4 space-y-4">
-            {host.reviews.map((r) => (
-              <article key={r.author} className="rounded-2xl border border-line bg-white p-4">
-                <div className="flex justify-between text-sm">
-                  <span className="font-semibold">{r.author}</span>
-                  <span className="text-accent">{"★".repeat(r.rating)}</span>
-                </div>
-                <p className="mt-2 text-muted">{r.text}</p>
-              </article>
-            ))}
-          </div>
+          {host.reviews.length > 0 && (
+            <>
+              <h2 className="mt-10 text-xl font-semibold">Што велат гостите</h2>
+              <div className="mt-4 space-y-4">
+                {host.reviews.map((r) => (
+                  <article key={r.author} className="rounded-2xl border border-line bg-white p-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">{r.author}</span>
+                      <span className="text-accent">{"★".repeat(r.rating)}</span>
+                    </div>
+                    <p className="mt-2 text-muted">{r.text}</p>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <aside className="h-fit rounded-2xl border border-line bg-white p-5">
@@ -107,6 +131,33 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
               <dt className="text-muted">Член од</dt>
               <dd>{host.since}</dd>
             </div>
+            {host.startedMonth && host.startedYear && (
+              <div>
+                <dt className="text-muted">Бизнис од</dt>
+                <dd>
+                  {months[host.startedMonth - 1]} {host.startedYear}
+                </dd>
+              </div>
+            )}
+            {links.length > 0 && (
+              <div>
+                <dt className="text-muted">Линкови</dt>
+                <dd className="space-y-1">
+                  {links.map((l) => (
+                    <div key={l.label} className="break-all">
+                      <a
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow ugc"
+                        className="text-accent hover:underline"
+                      >
+                        {l.label}
+                      </a>
+                    </div>
+                  ))}
+                </dd>
+              </div>
+            )}
           </dl>
         </aside>
       </div>

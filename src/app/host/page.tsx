@@ -1,5 +1,6 @@
 import Link from "next/link";
-import HostForm from "@/components/HostForm";
+import RegisterForm from "@/components/RegisterForm";
+import { getAccount } from "@/lib/auth";
 
 const benefits = [
   "Бесплатно поставување на вашата работилница",
@@ -7,11 +8,14 @@ const benefits = [
   "Плаќање директно на вашата сметка",
 ];
 
-export default function HostPage() {
+export default async function HostPage() {
+  const account = await getAccount();
+
   return (
-    <div className="mx-auto grid max-w-5xl gap-10 px-4 py-12 md:grid-cols-2">
+    <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <div>
-        <h1 className="text-4xl font-bold leading-tight">Споделете ја вашата вештина</h1>
+        <h1 className="text-3xl font-bold leading-tight">Развијте го вашиот бизнис со нас</h1>
+        <h2 className="mt-2 text-xl font-medium text-accent">Споделете ја вашата вештина</h2>
         <p className="mt-4 text-muted">
           Готвите, цртате, правите керамика или свирите? Постојат луѓе што сакаат да научат од вас.
         </p>
@@ -21,15 +25,21 @@ export default function HostPage() {
           ))}
         </ul>
       </div>
-      <div className="space-y-4">
-        <HostForm />
-        <Link
-          href="/host/photos"
-          className="block rounded-2xl border border-line bg-white p-4 text-center text-sm hover:border-accent"
-        >
-          Веќе сте домаќин? <span className="text-accent">Управувајте со фотографиите →</span>
-        </Link>
-      </div>
+      {account ? (
+        <div className="h-fit rounded-2xl border border-line bg-white p-6 text-center">
+          <p className="text-3xl">👋</p>
+          <h2 className="mt-2 text-xl font-semibold">Добредојдовте, {account.name.split(" ")[0]}!</h2>
+          <p className="mt-1 text-muted">Веќе сте најавени.</p>
+          <Link
+            href="/host/dashboard"
+            className="mt-4 inline-block rounded-full bg-accent px-6 py-3 font-semibold text-white hover:bg-accent-dark"
+          >
+            Оди на мојата табла
+          </Link>
+        </div>
+      ) : (
+        <RegisterForm />
+      )}
     </div>
   );
 }

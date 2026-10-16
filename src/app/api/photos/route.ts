@@ -1,61 +1,41 @@
-import { promises as fs } from "fs";
-import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
-import { getClass } from "@/data/classes";
-import {
-  EXTENSIONS,
-  MAX_BYTES,
-  MAX_PHOTOS_PER_CLASS,
-  classDir,
-  detectImageType,
-  isValidPhotoName,
-  listPhotos,
-  photoPath,
-} from "@/lib/photos";
-
-// ВНИМАНИЕ (PoC): нема најава. Пред јавно објавување, овде мора да се провери
-// дека најавениот домаќин е сопственик на искуството.
+import { getAccount, sameOrigin } from "@/lib/auth";
+import { findOwnedTarget } from "@/lib/ownership";
+import { deletePhoto, isValidPhotoName, listPhotos, prepareImages, savePhotos } from "@/lib/photos";
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
 export async function POST(req: Request) {
+  if (!sameOrigin(req)) return fail("Недозволено барање.", 403);
+  const account = await getAccount();
+  if (!account) return fail("Најавете се.", 401);
+
   const form = await req.formData();
-  const slug = String(form.get("slug") ?? "");
-  if (!getClass(slug)) return fail("Непознато искуство.", 404);
+  const key = String(form.get("key") ?? "");
+  const target = await findOwnedTarget(account, key);
+  if (!target) return fail("Немате пристап до ова.", 403);
 
   const files = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
-  if (files.length === 0) return fail("Изберете барем една фотографија.");
+  const prepared = await prepareImages(files, (await listPhotos(key)).length, target.max);
+  if ("error" in prepared) return fail(prepared.error);
 
-  const existing = await listPhotos(slug);
-  if (existing.length + files.length > MAX_PHOTOS_PER_CLASS) {
-    return fail(`Максимум ${MAX_PHOTOS_PER_CLASS} фотографии по искуство.`);
-  }
-
-  const prepared: { name: string; data: Buffer }[] = [];
-  for (const file of files) {
-    if (file.size > MAX_BYTES) return fail(`„${file.name}“ е поголема од 5 MB.`);
-    const data = Buffer.from(await file.arrayBuffer());
-    const type = detectImageType(data);
-    if (!type || !EXTENSIONS[type]) return fail(`„${file.name}“ не е JPG, PNG или WebP.`);
-    const name = `${Date.now() + prepared.length}-${randomBytes(4).toString("hex")}.${EXTENSIONS[type]}`;
-    prepared.push({ name, data });
-  }
-
-  await fs.mkdir(classDir(slug), { recursive: true });
-  for (const p of prepared) await fs.writeFile(photoPath(slug, p.name), p.data);
-
+  await savePhotos(key, prepared.items);
   revalidatePath("/", "layout");
-  return Response.json({ ok: true, added: prepared.length });
+  return Response.json({ ok: true, added: prepared.items.length });
 }
 
 export async function DELETE(req: Request) {
+  if (!sameOrigin(req)) return fail("Недозволено барање.", 403);
+  const account = await getAccount();
+  if (!account) return fail("Најавете се.", 401);
+
   const body = await req.json().catch(() => null);
-  const slug = String(body?.slug ?? "");
+  const key = String(body?.key ?? "");
   const name = String(body?.name ?? "");
-  if (!getClass(slug)) return fail("Непознато искуство.", 404);
+  if (!(await findOwnedTarget(account, key))) return fail("Немате пристап до ова.", 403);
   if (!isValidPhotoName(name)) return fail("Невалидна фотографија.");
 
-  await fs.unlink(photoPath(slug, name)).catch(() => undefined);
+  await deletePhoto(key, name);
   revalidatePath("/", "layout");
   return Response.json({ ok: true });
 }

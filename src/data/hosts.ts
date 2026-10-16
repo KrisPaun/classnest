@@ -6,6 +6,13 @@ export type Host = {
   slug: string;
   name: string; // мора да се совпаѓа со ClassItem.host
   city: string;
+  category?: string; // по желба, само за регистрирани домаќини
+  businessName?: string; // само за регистрирани домаќини
+  website?: string; // само за регистрирани домаќини
+  instagram?: string; // само за регистрирани домаќини
+  facebook?: string; // само за регистрирани домаќини
+  startedMonth?: number; // само за регистрирани домаќини
+  startedYear?: number; // само за регистрирани домаќини
   since: number;
   languages: string[];
   story: string;
@@ -199,8 +206,9 @@ export const hosts: Host[] = [
 
 export const getHost = (slug: string) => hosts.find((h) => h.slug === slug);
 export const getHostByName = (name: string) => hosts.find((h) => h.name === name);
+// Само демо домаќините имаат искуства. Регистриран домаќин со исто име не смее да ги презема.
 export const getHostClasses = (host: Host): ClassItem[] =>
-  classes.filter((c) => c.host === host.name);
+  hosts.some((h) => h.slug === host.slug) ? classes.filter((c) => c.host === host.name) : [];
 
 export const hostStats = (host: Host) => {
   const list = getHostClasses(host);
