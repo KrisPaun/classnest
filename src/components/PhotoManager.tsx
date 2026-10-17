@@ -67,14 +67,14 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="text-sm font-medium">Фотографии за</label>
+        <label className="text-base font-medium">Фотографии за</label>
         <select
           value={key}
           onChange={(e) => {
             setKey(e.target.value);
             setMessage(null);
           }}
-          className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm outline-none focus:border-accent"
+          className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-base outline-none focus:border-accent"
         >
           {targets.map((t) => (
             <option key={t.key} value={t.key}>
@@ -91,7 +91,7 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
       >
         <span className="text-3xl">📷</span>
         <span className="mt-2 font-medium">{busy ? "Се обработува…" : "Кликнете за да додадете фотографии"}</span>
-        <span className="mt-1 text-xs text-muted">
+        <span className="mt-1 text-sm text-muted">
           JPG, PNG или WebP · до 5 MB по фотографија · {current.photos.length}/{current.max}
         </span>
         <input
@@ -106,7 +106,7 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
       {message && <p className={`text-sm ${message.ok ? "text-green-700" : "text-red-700"}`}>{message.text}</p>}
 
       {current.photos.length === 0 ? (
-        <p className="text-sm text-muted">Сè уште нема фотографии.</p>
+        <p className="text-base text-muted">Сè уште нема фотографии.</p>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {current.photos.map((p, i) => (
@@ -114,7 +114,7 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.url} alt={`Фотографија ${i + 1}`} className="h-36 w-full object-cover" />
               {i === 0 && (
-                <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium">
+                <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-sm font-medium">
                   Главна
                 </span>
               )}
@@ -122,7 +122,7 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
                 type="button"
                 onClick={() => onDelete(p.name)}
                 disabled={busy}
-                className="absolute right-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs hover:bg-white"
+                className="absolute right-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-sm hover:bg-white"
               >
                 Избриши
               </button>

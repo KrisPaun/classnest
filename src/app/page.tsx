@@ -43,7 +43,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-semibold">Популарни искуства</h2>
-          <Link href="/classes" className="text-sm text-accent hover:underline">
+          <Link href="/classes" className="text-sm font-medium text-accent underline underline-offset-2 hover:text-accent-dark">
             Види сите →
           </Link>
         </div>

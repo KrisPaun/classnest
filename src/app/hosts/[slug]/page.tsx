@@ -149,7 +149,7 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
                         href={l.url}
                         target="_blank"
                         rel="noopener noreferrer nofollow ugc"
-                        className="text-accent hover:underline"
+                        className="font-medium text-accent underline underline-offset-2 hover:text-accent-dark"
                       >
                         {l.label}
                       </a>

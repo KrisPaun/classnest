@@ -7,6 +7,8 @@
   --color-muted: #6f675f;
   --color-cream: #faf7f2;
   --color-line: #e8e1d7;
+  --color-field: #fbf6f5;
+  --color-field-border: #d3cdcd;
 }
 
 body {
