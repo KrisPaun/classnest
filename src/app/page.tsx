@@ -1,7 +1,11 @@
 import Link from "next/link";
 import SearchForm from "@/components/SearchForm";
 import ClassCard from "@/components/ClassCard";
-import { categories, classes } from "@/data/classes";
+import { categories } from "@/data/reference";
+import { findListings } from "@/lib/public-listings";
+
+// Понудите се читаат од базата при секое барање.
+export const dynamic = "force-dynamic";
 
 const steps = [
   { emoji: "🔎", title: "Пронајдете", text: "Разгледајте стотици искуства по град и категорија." },
@@ -9,7 +13,8 @@ const steps = [
   { emoji: "✨", title: "Уживајте", text: "Научете нешто ново од локални мајстори." },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const popular = await findListings({ limit: 6 });
   return (
     <>
       <section className="mx-auto max-w-6xl px-4 pt-16 pb-12">
@@ -48,10 +53,11 @@ export default function Home() {
           </Link>
         </div>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {classes.slice(0, 6).map((c) => (
+          {popular.map((c) => (
             <ClassCard key={c.slug} item={c} />
           ))}
         </div>
+        {popular.length === 0 && <p className="mt-4 text-muted">Наскоро ќе има нови искуства.</p>}
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12">

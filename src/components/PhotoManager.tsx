@@ -67,8 +67,9 @@ export default function PhotoManager({ targets }: { targets: Target[] }) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="text-base font-medium">Фотографии за</label>
+        <label htmlFor="photo-target" className="text-base font-medium">Фотографии за</label>
         <select
+          id="photo-target"
           value={key}
           onChange={(e) => {
             setKey(e.target.value);

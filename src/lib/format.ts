@@ -27,6 +27,10 @@ export const formatDate = (iso: string) => {
 export const formatDuration = (hours: number) =>
   `${String(hours).replace(".", ",")} ч.`;
 
+/** Времетраење од минути: 45 → „45 мин.“, 90 → „1,5 ч.“, 180 → „3 ч.“. */
+export const formatMinutes = (minutes: number) =>
+  minutes < 60 ? `${minutes} мин.` : formatDuration(Math.round((minutes / 60) * 100) / 100);
+
 /** Следни датуми за демо: секој втор ден, почнувајќи од задутре. */
 export const upcomingDates = (count = 8): string[] => {
   const result: string[] = [];

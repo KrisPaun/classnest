@@ -1,4 +1,4 @@
-import { categories, cities } from "@/data/classes";
+import { categories, cities } from "@/data/reference";
 
 type Props = { category?: string; city?: string; q?: string };
 

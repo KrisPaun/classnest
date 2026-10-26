@@ -1,6 +1,6 @@
 import Link from "next/link";
 import RegisterForm from "@/components/RegisterForm";
-import { getAccount } from "@/lib/auth";
+import { getAccountSafe } from "@/lib/auth";
 
 const benefits = [
   "Бесплатно поставување на вашата работилница",
@@ -9,7 +9,7 @@ const benefits = [
 ];
 
 export default async function HostPage() {
-  const account = await getAccount();
+  const account = await getAccountSafe();
 
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -34,7 +34,7 @@ export default async function HostPage() {
             href="/host/dashboard"
             className="mt-4 inline-block rounded-full bg-accent px-6 py-3 font-semibold text-white hover:bg-accent-dark"
           >
-            Оди на мојата табла
+            Оди на мојот профил
           </Link>
         </div>
       ) : (

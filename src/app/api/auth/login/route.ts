@@ -1,7 +1,6 @@
 import { createSession, sameOrigin } from "@/lib/auth";
-import { readDb } from "@/lib/db";
-import { DUMMY_HASH, verifyPassword } from "@/lib/password.mjs";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { authenticate, normalizeEmail } from "@/server/modules/identity/service";
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
@@ -9,7 +8,7 @@ export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail("Недозволено барање.", 403);
 
   const body = await req.json().catch(() => null);
-  const email = String(body?.email ?? "").trim().toLowerCase();
+  const email = normalizeEmail(String(body?.email ?? ""));
   const password = String(body?.password ?? "");
   if (!email || !password || email.length > 254 || password.length > 128) {
     return fail("Внесете е-пошта и лозинка.");
@@ -19,12 +18,15 @@ export async function POST(req: Request) {
     return fail("Премногу обиди. Обидете се за 15 минути.", 429);
   }
 
-  const db = await readDb();
-  const account = db.accounts.find((a) => a.email === email);
-  // Проверката се извршува секогаш (и за непостоечки корисник) за да трае исто.
-  const ok = await verifyPassword(password, account?.passwordHash ?? DUMMY_HASH);
-  if (!account || !ok) return fail("Погрешна е-пошта или лозинка.", 401);
+  try {
+    const account = await authenticate(email, password);
+    if (!account) return fail("Погрешна е-пошта или лозинка.", 401);
 
-  await createSession(account.id);
-  return Response.json({ ok: true });
+    await createSession(account.id);
+    return Response.json({ ok: true });
+  } catch (error) {
+    // Базата не одговара. Не ги откриваме деталите, само пријавуваме привремена недостапност.
+    console.error("login failed:", error instanceof Error ? error.message : "unknown error");
+    return fail("Услугата е привремено недостапна. Обидете се повторно.", 503);
+  }
 }

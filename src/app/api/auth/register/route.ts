@@ -1,14 +1,13 @@
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
-import { categories, cities } from "@/data/classes";
-import { hosts } from "@/data/hosts";
+import { categories, cities } from "@/data/reference";
 import { createSession, sameOrigin } from "@/lib/auth";
-import { mutate } from "@/lib/db";
-import { makeHostSlug } from "@/lib/host-directory";
-import { hashPassword } from "@/lib/password.mjs";
-import { MAX_REGISTER_PHOTOS, hostPhotoKey, prepareImages, savePhotos } from "@/lib/photos";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { encryptSecret, secretBoxConfigured } from "@/lib/secret-box.mjs";
 import { normalizePhone, normalizeWebsite } from "@/lib/validation";
+import { createHost } from "@/server/modules/hosts/service";
+import { UnknownReferenceError } from "@/server/modules/hosts/types";
+import { registerAccount, removeAccount } from "@/server/modules/identity/service";
+import { EmailTakenError } from "@/server/modules/identity/types";
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,46 +47,46 @@ export async function POST(req: Request) {
   const phoneRaw = text("phone");
   const phone = phoneRaw ? normalizePhone(phoneRaw) : undefined;
   if (phoneRaw && !phone) return fail("Внесете валиден телефон, на пр. +389 70 123 456.");
-
-  const files = form.getAll("photos").filter((f): f is File => f instanceof File && f.size > 0);
-  let prepared: Awaited<ReturnType<typeof prepareImages>> | null = null;
-  if (files.length > 0) {
-    prepared = await prepareImages(files, 0, MAX_REGISTER_PHOTOS);
-    if ("error" in prepared) return fail(prepared.error);
+  if (phone && !secretBoxConfigured()) {
+    return fail("Серверот не е конфигуриран за безбедно чување на телефон (BANK_DATA_KEY).", 500);
   }
 
-  const passwordHash = await hashPassword(password);
+  try {
+    // 1) Сметката. Единствената е-пошта ја гарантира базата (уникатен индекс).
+    let account;
+    try {
+      account = await registerAccount({ email, fullName: name, password, role: "HOST" });
+    } catch (error) {
+      if (error instanceof EmailTakenError) return fail("Веќе постои профил со оваа е-пошта. Најавете се.", 409);
+      throw error;
+    }
 
-  const created = await mutate((db) => {
-    if (db.accounts.some((a) => a.email === email)) return null;
-    const taken = new Set([...hosts.map((h) => h.slug), ...db.hosts.map((h) => h.slug)]);
-    const slug = makeHostSlug(name, taken);
-    const account = {
-      id: randomUUID(),
-      email,
-      name,
-      passwordHash,
-      hostSlug: slug,
-      ...(phone ? { phone } : {}),
-      createdAt: new Date().toISOString(),
-    };
-    db.accounts.push(account);
-    db.hosts.push({
-      slug,
-      name,
-      city,
-      ...(category ? { category } : {}),
-      about,
-      ...(businessName ? { businessName } : {}),
-      ...(website ? { website } : {}),
-      createdAt: account.createdAt,
-    });
-    return account;
-  });
-  if (!created) return fail("Веќе постои профил со оваа е-пошта. Најавете се.", 409);
+    // 2) Профилот на домаќинот. Ако не успее, ја бришеме сметката за да не остане сметка без профил.
+    try {
+      await createHost({
+        accountId: account.id,
+        name,
+        citySlug: city,
+        categorySlug: category || undefined,
+        about,
+        businessName: businessName || undefined,
+        website: website || undefined,
+        phoneEnc: phone ? encryptSecret(phone) : undefined,
+      });
+    } catch (error) {
+      await removeAccount(account.id);
+      if (error instanceof UnknownReferenceError) {
+        console.error("register failed:", error.message);
+        return fail("Базата не е подготвена (недостасуваат градови). Извршете „npm run db:seed“.", 500);
+      }
+      throw error;
+    }
 
-  if (prepared && "items" in prepared) await savePhotos(hostPhotoKey(created.hostSlug), prepared.items);
-  await createSession(created.id);
-  revalidatePath("/", "layout");
-  return Response.json({ ok: true });
+    await createSession(account.id);
+    revalidatePath("/", "layout");
+    return Response.json({ ok: true });
+  } catch (error) {
+    console.error("register failed:", error instanceof Error ? error.message : "unknown error");
+    return fail("Регистрацијата не успеа. Обидете се повторно.", 500);
+  }
 }

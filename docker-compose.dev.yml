@@ -1,0 +1,31 @@
+# Локална база за развој. Само за вашиот компјутер: лозинките овде не се за продукција.
+#   npm run db:up      # старт на MySQL
+#   npm run db:migrate # создавање на табелите
+#   npm run db:down    # стоп (податоците остануваат). За бришење на податоците: docker compose -f docker-compose.dev.yml down -v
+#
+# ВАЖНО: ако Hostinger користи MariaDB (а не MySQL), сменете ја сликата во mariadb:10.11
+# за да тестирате на истата база што ќе ја користите во продукција.
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: classnest
+      MYSQL_USER: classnest
+      MYSQL_PASSWORD: classnest
+      MYSQL_ROOT_PASSWORD: root
+    command: >-
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone=+00:00
+    ports:
+      - "127.0.0.1:3306:3306" # достапна само од овој компјутер
+    volumes:
+      - classnest-dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  classnest-dbdata:

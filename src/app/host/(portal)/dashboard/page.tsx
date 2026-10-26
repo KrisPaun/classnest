@@ -19,7 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <PortalTitle>Табла</PortalTitle>
+      <PortalTitle>Профил</PortalTitle>
 
       <h2 className="mt-8 text-2xl font-semibold">Здраво, {account.name.split(" ")[0]}</h2>
       <p className="mt-2 text-muted">

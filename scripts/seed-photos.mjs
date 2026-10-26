@@ -1,10 +1,25 @@
-// Ги копира фотографиите од seed-photos/<slug>/ во uploads/<slug>/
-// (истиот формат што го користи качувањето од /host/photos).
-// Употреба: npm run seed:photos
+// Ги копира фотографиите од seed-photos/<slug>/ во uploads/exp-<id>/, каде <id> е идентификаторот на понудата
+// со тој slug во базата (истиот формат што го користи качувањето од /host/photos).
+// Прво извршете: npm run db:seed:demo. Употреба: npm run seed:photos
 
 import { promises as fs } from "node:fs";
 import { randomBytes } from "node:crypto";
 import path from "node:path";
+import mysql from "mysql2/promise";
+import { describeDbError } from "../src/server/db/describe-error.mjs";
+
+if (!process.env.DATABASE_URL) {
+  try {
+    process.loadEnvFile(".env.local");
+  } catch {
+    // нема .env.local
+  }
+}
+const url = process.env.DATABASE_URL;
+if (!url || !url.startsWith("mysql://")) {
+  console.error("DATABASE_URL недостасува или не почнува со mysql://");
+  process.exit(1);
+}
 
 const SEED = path.join(process.cwd(), "seed-photos");
 const OUT = path.join(process.cwd(), "uploads");
@@ -28,11 +43,19 @@ try {
   process.exit(1);
 }
 
+const pool = mysql.createPool({ uri: url, connectionLimit: 1, charset: "utf8mb4" });
 let total = 0;
+try {
 for (const dir of dirs) {
   const slug = dir.name;
+  const [found] = await pool.execute("SELECT id FROM listings WHERE slug = ?", [slug]);
+  if (found.length === 0) {
+    console.warn(`  прескокнато: нема понуда со slug „${slug}“ во базата (npm run db:seed:demo)`);
+    continue;
+  }
+  const key = `exp-${found[0].id}`;
   const files = (await fs.readdir(path.join(SEED, slug))).sort().slice(0, MAX_PER_CLASS);
-  await fs.mkdir(path.join(OUT, slug), { recursive: true });
+  await fs.mkdir(path.join(OUT, key), { recursive: true });
   let n = 0;
   for (const file of files) {
     const data = await fs.readFile(path.join(SEED, slug, file));
@@ -42,10 +65,16 @@ for (const dir of dirs) {
       continue;
     }
     const name = `${Date.now() + n}-${randomBytes(4).toString("hex")}.${ext}`;
-    await fs.writeFile(path.join(OUT, slug, name), data);
+    await fs.writeFile(path.join(OUT, key, name), data);
     n++;
   }
   total += n;
   console.log(`${slug}: ${n} фотографии`);
 }
 console.log(`Готово. Вкупно: ${total}.`);
+} catch (error) {
+  console.error("Не успеа:", describeDbError(error));
+  process.exitCode = 1;
+} finally {
+  await pool.end();
+}

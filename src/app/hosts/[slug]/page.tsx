@@ -1,24 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ClassCard from "@/components/ClassCard";
 import HostAvatar from "@/components/HostAvatar";
 import PhotoGallery from "@/components/PhotoGallery";
-import { getCategory, getCity } from "@/data/classes";
-import { getHostClasses, hostStats } from "@/data/hosts";
+import { getCategory, getCity } from "@/data/reference";
 import { months } from "@/lib/format";
+import { gradientFor } from "@/lib/gradient";
 import { getHostAny } from "@/lib/host-directory";
+import { findHostListings, summarize } from "@/lib/public-listings";
+import { summary } from "@/lib/seo";
 import { hostPhotoKey, listPhotoUrls } from "@/lib/photos";
-
-const greenStyle = "bg-green-100 text-green-800";
-
-// Зелено е стандардно (перформанси). Само статус и традиција имаат своја боја.
-const badgeStyles: Record<string, string> = {
-  "Нов домаќин": "bg-sky-100 text-sky-800",
-  "Традиционален занает": "bg-amber-100 text-amber-800",
-};
 
 // Нови домаќини се регистрираат во живо, па профилите не се генерираат статично.
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const host = await getHostAny((await params).slug);
+  if (!host) return { title: "Домаќинот не е пронајден", robots: { index: false } };
+
+  const description = summary(host.story);
+  return {
+    title: host.name,
+    description,
+    alternates: { canonical: `/hosts/${host.slug}` },
+    openGraph: { title: host.name, description, type: "profile" },
+  };
+}
 
 export default async function HostProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -27,8 +35,8 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
 
   const city = getCity(host.city);
   const category = getCategory(host.category ?? "");
-  const list = getHostClasses(host);
-  const stats = hostStats(host);
+  const list = await findHostListings(host.slug);
+  const stats = summarize(list);
   const photos = await listPhotoUrls(hostPhotoKey(host.slug));
   const links = [
     host.website && { label: "Веб-страница", url: host.website },
@@ -52,34 +60,29 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
             {category ? ` · ${category.name}` : ""} · Домаќин од {host.since}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {host.badges.map((b) => (
-              <span
-                key={b}
-                className={`rounded-full px-3 py-1 text-xs font-medium ${badgeStyles[b] ?? greenStyle}`}
-              >
-                {b}
-              </span>
-            ))}
+            {stats.reviewCount === 0 && (
+              <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-800">Нов домаќин</span>
+            )}
           </div>
         </div>
         <dl className="grid grid-cols-3 gap-4 text-center sm:text-left">
           <div>
             <dt className="text-xs text-muted">Оцена</dt>
-            <dd className="text-xl font-semibold">{stats.reviews > 0 ? `★ ${stats.rating.toFixed(1)}` : "—"}</dd>
+            <dd className="text-xl font-semibold">{stats.reviewCount > 0 ? `★ ${stats.rating.toFixed(1)}` : "—"}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted">Рецензии</dt>
-            <dd className="text-xl font-semibold">{stats.reviews}</dd>
+            <dd className="text-xl font-semibold">{stats.reviewCount}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted">Искуства</dt>
-            <dd className="text-xl font-semibold">{stats.classCount}</dd>
+            <dd className="text-xl font-semibold">{stats.listingCount}</dd>
           </div>
         </dl>
       </section>
 
       {photos.length > 0 && (
-        <PhotoGallery photos={photos} title={host.name} emoji="" gradient={host.gradient} />
+        <PhotoGallery photos={photos} title={host.name} emoji="" gradient={gradientFor(host.slug)} />
       )}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px]">
@@ -96,23 +99,6 @@ export default async function HostProfilePage({ params }: { params: Promise<{ sl
             </div>
           ) : (
             <p className="mt-3 text-muted">Сè уште нема објавени искуства.</p>
-          )}
-
-          {host.reviews.length > 0 && (
-            <>
-              <h2 className="mt-10 text-xl font-semibold">Што велат гостите</h2>
-              <div className="mt-4 space-y-4">
-                {host.reviews.map((r) => (
-                  <article key={r.author} className="rounded-2xl border border-line bg-white p-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-semibold">{r.author}</span>
-                      <span className="text-accent">{"★".repeat(r.rating)}</span>
-                    </div>
-                    <p className="mt-2 text-muted">{r.text}</p>
-                  </article>
-                ))}
-              </div>
-            </>
           )}
         </div>
 

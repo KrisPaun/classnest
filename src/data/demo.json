@@ -1,0 +1,330 @@
+{
+  "hosts": [
+    {
+      "slug": "nikola-stojanov",
+      "name": "Никола Стојанов",
+      "city": "skopje",
+      "about": "Готвач со 15 години искуство во ресторани во Скопје и Виена.",
+      "story": "Готвам од тинејџер, а професионално од 2009 година. Работев во ресторани во Скопје и Виена, а денес сакам да ја пренесам македонската кујна на луѓе што сакаат да научат како се прави вистинско тавче гравче. Кај мене нема тајни рецепти. Сè се споделува."
+    },
+    {
+      "slug": "marija-ristovska",
+      "name": "Марија Ристовска",
+      "city": "skopje",
+      "about": "Љубител на италијанската кујна, ги учи гостите да прават паста на рака.",
+      "story": "Откако живеев една година во Болоња, паста правам само на рака. На моите работилници сите месиме, ги сечеме таљателите и на крај заедно ја јадеме вечерата со чаша вино."
+    },
+    {
+      "slug": "ana-dimitrovska",
+      "name": "Ана Димитровска",
+      "city": "skopje",
+      "about": "Керамичарка и дипломирана на Факултетот за ликовни уметности.",
+      "story": "Керамичарка сум повеќе од десет години. Во моето студио во Дебар Маало секој ќе го пронајде мирот пред грнчарското тркало и ќе однесе дома нешто што сам го направил."
+    },
+    {
+      "slug": "biljana-trajkovska",
+      "name": "Билјана Трајковска",
+      "city": "ohrid",
+      "about": "Третата генерација на семејство со традиција во изработка на охридски бисер.",
+      "story": "Мојата фамилија го работи охридскиот бисер три генерации. Ја учам историјата и занаетот на гости од цел свет, па секој оди дома со накит што сам го направил."
+    },
+    {
+      "slug": "goran-petrov",
+      "name": "Горан Петров",
+      "city": "ohrid",
+      "about": "Сомелиер и сопственик на мала визба над Охридското Езеро.",
+      "story": "Сомелиер сум и имам мала визба над Охридското Езеро. Вечерите ги правам неформални: добро вино, локални сирења и приказни зад секоја чаша."
+    },
+    {
+      "slug": "elena-jovanovska",
+      "name": "Елена Јовановска",
+      "city": "ohrid",
+      "about": "Сликарка и предавач, организира работилници на отворено.",
+      "story": "Сликам од дете и предавам веќе осум години. Работилниците ги правам на отворено, затоа што најдобрите пејзажи се токму тука, покрај езерото."
+    },
+    {
+      "slug": "darko-iliev",
+      "name": "Дарко Илиев",
+      "city": "bitola",
+      "about": "Фотограф со изложби во Македонија и Србија.",
+      "story": "Фотографирам улици и луѓе повеќе од петнаесет години. На прошетките низ Широк Сокак ги делам советите што ми беа најкорисни, без технички жаргон."
+    },
+    {
+      "slug": "stefan-krstev",
+      "name": "Стефан Крстев",
+      "city": "bitola",
+      "about": "Музичар и наставник по гитара веќе 10 години.",
+      "story": "Свирам гитара од 12-годишна возраст и предавам 10 години. Верувам дека секој може да научи три акорди за еден ден и да одсвири песна пред другарите."
+    },
+    {
+      "slug": "sofija-andreeva",
+      "name": "Софија Андреева",
+      "city": "skopje",
+      "about": "Цвеќарка со сопствено студио во Скопје.",
+      "story": "Моето студио е полно со свежо цвеќе секој ден. Сакам луѓето да се опуштат, да мирисаат и да направат нешто убаво со рацете."
+    },
+    {
+      "slug": "kiril-angelov",
+      "name": "Кирил Ангелов",
+      "city": "skopje",
+      "about": "Готвач специјализиран за азиска кујна.",
+      "story": "Азиската кујна ме фасцинира од студентските денови. Суши е повеќе техника отколку тајна, па затоа на работилницата секој прави свои ролни од почеток."
+    },
+    {
+      "slug": "vasko-mitev",
+      "name": "Васко Митев",
+      "city": "bitola",
+      "about": "Винар од трето колено, ги претставува вината од Тиквешијата.",
+      "story": "Винар сум од трето колено од Тиквешијата. Вечерите во Битола ги правам за да ги претставам вината од мојот крај и приказните од лозјата."
+    },
+    {
+      "slug": "lidija-serafimova",
+      "name": "Лидија Серафимова",
+      "city": "bitola",
+      "about": "Чувар на традиционалното ткаење, организира работилници за млади.",
+      "story": "Ткаењето ми го пренесе баба ми. Сакам тој занает да не исчезне, затоа ги учам младите на разбој и со задоволство гледам како раѓаат нови мотиви."
+    }
+  ],
+  "listings": [
+    {
+      "hostSlug": "nikola-stojanov",
+      "slug": "tavche-gravche-so-nikola",
+      "title": "Тавче гравче и македонска кујна",
+      "type": "food",
+      "category": "gotvenje",
+      "description": "Научете како се подготвува вистинско тавче гравче, шопска салата и баница од нула. На крај седнуваме заедно и ја јадеме вечерата што ја направивме.\n\nВклучено: Сите состојки, Престилка, Рецепти за дома, Вечера и пијалок.",
+      "price": 1900,
+      "durationMinutes": 180,
+      "maxPeople": 8,
+      "city": "skopje",
+      "address": "Старата чаршија, Скопје",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.9,
+      "reviewCount": 42
+    },
+    {
+      "hostSlug": "marija-ristovska",
+      "slug": "domasna-pasta",
+      "title": "Домашна паста и тирамису",
+      "type": "food",
+      "category": "gotvenje",
+      "description": "Од брашно и јајца до свежи таљатели и кремаст тирамису. Идеално за парови и групи пријатели.\n\nВклучено: Сите состојки, Чаша вино, Рецепти.",
+      "price": 2200,
+      "durationMinutes": 180,
+      "maxPeople": 10,
+      "city": "skopje",
+      "address": "Центар, Скопје",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.8,
+      "reviewCount": 31
+    },
+    {
+      "hostSlug": "ana-dimitrovska",
+      "slug": "grncarstvo-za-pocetnici",
+      "title": "Грнчарство за почетници",
+      "type": "class",
+      "category": "keramika",
+      "description": "Седнете на грнчарско тркало и направете своја чаша или чинија. Изработката се пече и можете да ја подигнете по две недели.\n\nВклучено: Глина и алат, Печење на изработката, Чај и закуска.",
+      "price": 2500,
+      "durationMinutes": 150,
+      "maxPeople": 6,
+      "city": "skopje",
+      "address": "Дебар Маало, Скопје",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 5,
+      "reviewCount": 27
+    },
+    {
+      "hostSlug": "biljana-trajkovska",
+      "slug": "ohridski-biseri-nakit",
+      "title": "Изработка на накит со охридски бисер",
+      "type": "class",
+      "category": "zanaeti",
+      "description": "Научете за историјата на охридскиот бисер и направете сопствена алка или привезок под водство на мајстор.\n\nВклучено: Материјали, Кутија за подарок, Кафе или чај.",
+      "price": 2800,
+      "durationMinutes": 120,
+      "maxPeople": 6,
+      "city": "ohrid",
+      "address": "Стара чаршија, Охрид",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.9,
+      "reviewCount": 19
+    },
+    {
+      "hostSlug": "goran-petrov",
+      "slug": "vino-i-sirenje-ohrid",
+      "title": "Дегустација на вино и сирења",
+      "type": "experience",
+      "category": "vino",
+      "description": "Пет македонски вина, пет локални сирења и приказни зад секое од нив, со поглед на езерото.\n\nВклучено: 5 вина, Даска со сирења, Леб и маслинки.",
+      "price": 2400,
+      "durationMinutes": 120,
+      "maxPeople": 12,
+      "city": "ohrid",
+      "address": "Лагадин, Охрид",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.7,
+      "reviewCount": 53
+    },
+    {
+      "hostSlug": "elena-jovanovska",
+      "slug": "slikanje-pri-ezero",
+      "title": "Сликање со акварел покрај езерото",
+      "type": "class",
+      "category": "slikanje",
+      "description": "Без потребно предзнаење. Заедно ќе насликаме пејзаж на Охридското Езеро со акварел.\n\nВклучено: Боја, четки и платно, Кафе.",
+      "price": 1700,
+      "durationMinutes": 150,
+      "maxPeople": 8,
+      "city": "ohrid",
+      "address": "Каней, Охрид",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.8,
+      "reviewCount": 22
+    },
+    {
+      "hostSlug": "darko-iliev",
+      "slug": "fotografija-bitola",
+      "title": "Улична фотографија низ Широк Сокак",
+      "type": "experience",
+      "category": "fotografija",
+      "description": "Прошетка низ Битола со совети за композиција, светло и портрети. Доволен е и телефон.\n\nВклучено: Лични совети, Преглед на фотографиите, Кафе.",
+      "price": 1500,
+      "durationMinutes": 180,
+      "maxPeople": 8,
+      "city": "bitola",
+      "address": "Широк Сокак, Битола",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.9,
+      "reviewCount": 14
+    },
+    {
+      "hostSlug": "stefan-krstev",
+      "slug": "gitara-za-pocetnici",
+      "title": "Гитара за почетници за еден ден",
+      "type": "class",
+      "category": "muzika",
+      "description": "Научете три акорди и одсвирете ја вашата прва песна. Гитарите ги обезбедуваме ние.\n\nВклучено: Гитара за час, Ноти и акорди.",
+      "price": 1400,
+      "durationMinutes": 120,
+      "maxPeople": 6,
+      "city": "bitola",
+      "address": "Центар, Битола",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.6,
+      "reviewCount": 11
+    },
+    {
+      "hostSlug": "sofija-andreeva",
+      "slug": "cvetni-aranzmani",
+      "title": "Цветни аранжмани и венци",
+      "type": "class",
+      "category": "cvekjarstvo",
+      "description": "Направете сопствен букет или венец од свежо цвеќе и однесете го дома.\n\nВклучено: Свежо цвеќе, Материјали, Чаша пенливо.",
+      "price": 1800,
+      "durationMinutes": 120,
+      "maxPeople": 10,
+      "city": "skopje",
+      "address": "Карпош, Скопје",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.9,
+      "reviewCount": 36
+    },
+    {
+      "hostSlug": "kiril-angelov",
+      "slug": "sushi-skopje",
+      "title": "Вечер со суши",
+      "type": "food",
+      "category": "gotvenje",
+      "description": "Научете да правите маки, нигири и уромаки и вечерајте со она што сте го направиле.\n\nВклучено: Сите состојки, Прибор, Зелен чај.",
+      "price": 2600,
+      "durationMinutes": 150,
+      "maxPeople": 8,
+      "city": "skopje",
+      "address": "Аеродром, Скопје",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.8,
+      "reviewCount": 25
+    },
+    {
+      "hostSlug": "vasko-mitev",
+      "slug": "vino-bitola",
+      "title": "Вечер со вина од Тиквешијата",
+      "type": "experience",
+      "category": "vino",
+      "description": "Дегустација на шест вина со приказни за лозјата, берба и производство.\n\nВклучено: 6 вина, Ладни предјадења.",
+      "price": 2100,
+      "durationMinutes": 120,
+      "maxPeople": 12,
+      "city": "bitola",
+      "address": "Центар, Битола",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 4.7,
+      "reviewCount": 17
+    },
+    {
+      "hostSlug": "lidija-serafimova",
+      "slug": "tkaenje-na-razboj",
+      "title": "Ткаење на разбој",
+      "type": "class",
+      "category": "zanaeti",
+      "description": "Запознајте го традиционалното ткаење и изработете мал ќилимец или подметач на разбој.\n\nВклучено: Материјали, Чај и бисквити.",
+      "price": 1600,
+      "durationMinutes": 180,
+      "maxPeople": 5,
+      "city": "bitola",
+      "address": "Стара чаршија, Битола",
+      "maskLocation": false,
+      "cancellation": {
+        "mode": "flexible",
+        "days": 3
+      },
+      "rating": 5,
+      "reviewCount": 9
+    }
+  ]
+}

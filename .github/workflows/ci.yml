@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: classnest_test
+          MYSQL_USER: classnest
+          MYSQL_PASSWORD: classnest
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: mysql://classnest:classnest@127.0.0.1:3306/classnest_test
+      TEST_DATABASE_URL: mysql://classnest:classnest@127.0.0.1:3306/classnest_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # --legacy-peer-deps: npm 10.8 пука на опционални peer зависности на vitest (грешка "edgesOut").
+      - run: npm ci --legacy-peer-deps
+
+      - run: npx tsc --noEmit
+
+      # Миграциите мора да поминат на празна база.
+      - run: npm run db:migrate
+
+      - run: npm test

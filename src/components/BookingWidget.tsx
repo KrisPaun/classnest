@@ -7,11 +7,12 @@ import { formatDate, formatPrice } from "@/lib/format";
 type Props = {
   slug: string;
   price: number;
+  unit?: string;
   maxPeople: number;
   dates: string[];
 };
 
-export default function BookingWidget({ slug, price, maxPeople, dates }: Props) {
+export default function BookingWidget({ slug, price, unit = "по човек", maxPeople, dates }: Props) {
   const [date, setDate] = useState(dates[0]);
   const [people, setPeople] = useState(2);
 
@@ -20,16 +21,17 @@ export default function BookingWidget({ slug, price, maxPeople, dates }: Props) 
   return (
     <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
       <p className="text-2xl font-semibold">
-        {formatPrice(price)} <span className="text-base font-normal text-muted">по човек</span>
+        {formatPrice(price)} <span className="text-base font-normal text-muted">{unit}</span>
       </p>
 
-      <label className="mt-5 block text-sm font-medium">Датум</label>
-      <div className="mt-2 grid grid-cols-2 gap-2">
+      <p id="booking-date-label" className="mt-5 block text-sm font-medium">Датум</p>
+      <div role="group" aria-labelledby="booking-date-label" className="mt-2 grid grid-cols-2 gap-2">
         {dates.slice(0, 6).map((d) => (
           <button
             key={d}
             type="button"
             onClick={() => setDate(d)}
+            aria-pressed={d === date}
             className={`rounded-xl border px-3 py-2 text-sm ${
               d === date
                 ? "border-accent bg-accent text-white"
@@ -41,8 +43,8 @@ export default function BookingWidget({ slug, price, maxPeople, dates }: Props) 
         ))}
       </div>
 
-      <label className="mt-5 block text-sm font-medium">Број на луѓе</label>
-      <div className="mt-2 flex items-center gap-4">
+      <p id="booking-people-label" className="mt-5 block text-sm font-medium">Број на луѓе</p>
+      <div role="group" aria-labelledby="booking-people-label" className="mt-2 flex items-center gap-4">
         <button
           type="button"
           onClick={() => setPeople((p) => Math.max(1, p - 1))}
@@ -51,7 +53,7 @@ export default function BookingWidget({ slug, price, maxPeople, dates }: Props) 
         >
           −
         </button>
-        <span className="w-6 text-center text-lg">{people}</span>
+        <span className="w-6 text-center text-lg" aria-live="polite">{people}</span>
         <button
           type="button"
           onClick={() => setPeople((p) => Math.min(maxPeople, p + 1))}

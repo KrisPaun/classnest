@@ -1,20 +1,23 @@
-import { Account, DynamicHost, Experience, readDb } from "./db";
+import type { HostRecord } from "@/server/modules/hosts/types";
+import { getFirstListing } from "@/server/modules/listings/service";
+import type { ListingRecord } from "@/server/modules/listings/types";
+import type { Account } from "@/server/modules/identity/types";
+import { getDynamicHost } from "./host-directory";
 
 export type SetupProgress = {
   /** false за демо домаќините (поврзани со hosts.ts): тие немаат чекори за поставување */
   hasSetup: boolean;
-  host: DynamicHost | null;
-  experience: Experience | null;
+  host: HostRecord | null;
+  experience: ListingRecord | null;
   /** Следен недовршен чекор (1–4) или null ако сè е готово */
   nextStep: 1 | 2 | 3 | 4 | null;
 };
 
 export async function getSetupProgress(account: Account): Promise<SetupProgress> {
-  const db = await readDb();
-  const host = db.hosts.find((h) => h.slug === account.hostSlug) ?? null;
-  const experience = db.experiences.find((e) => e.hostSlug === account.hostSlug) ?? null;
+  const host = await getDynamicHost(account.hostSlug);
+  if (!host) return { hasSetup: false, host: null, experience: null, nextStep: null };
 
-  if (!host) return { hasSetup: false, host: null, experience, nextStep: null };
+  const experience = await getFirstListing(account.hostSlug);
 
   const nextStep = !host.profileCompletedAt
     ? 1
