@@ -1,8 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { getAccount, sameOrigin } from "@/lib/auth";
-import { mutate } from "@/lib/db";
 import { avatarKey, deletePhoto, listPhotos, prepareImages, savePhotos } from "@/lib/photos";
 import { normalizeSocial, normalizeStart, normalizeWebsite } from "@/lib/validation";
+import { completeProfile } from "@/server/modules/hosts/service";
 
 const MIN_STORY = 50;
 const MAX_STORY = 2000;
@@ -51,17 +51,12 @@ export async function POST(req: Request) {
     if ("error" in prepared) return fail(prepared.error);
   }
 
-  const saved = await mutate((db) => {
-    const host = db.hosts.find((h) => h.slug === account.hostSlug);
-    if (!host) return false;
-    host.story = story;
-    host.profileCompletedAt ??= new Date().toISOString();
-    host.website = website ?? undefined;
-    host.instagram = instagram ?? undefined;
-    host.facebook = facebook ?? undefined;
-    host.startedMonth = started?.month;
-    host.startedYear = started?.year;
-    return true;
+  const saved = await completeProfile(account.hostSlug, {
+    story,
+    website: website ?? undefined,
+    instagram: instagram ?? undefined,
+    facebook: facebook ?? undefined,
+    started,
   });
   if (!saved) return fail("Овој профил не може да се менува.", 403);
 

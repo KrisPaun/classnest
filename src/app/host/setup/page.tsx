@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import SetupAvailabilityForm from "@/components/SetupAvailabilityForm";
@@ -5,11 +6,13 @@ import SetupExperienceForm from "@/components/SetupExperienceForm";
 import SetupPayoutForm from "@/components/SetupPayoutForm";
 import SetupProfileForm from "@/components/SetupProfileForm";
 import { requireAccount } from "@/lib/auth";
-import { readDb } from "@/lib/db";
 import { getDynamicHost } from "@/lib/host-directory";
 import { avatarKey, experiencePhotoKey, listPhotoUrls } from "@/lib/photos";
+import { getFirstListing } from "@/server/modules/listings/service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function SetupPage({ searchParams }: { searchParams: Promise<{ step?: string }> }) {
   const account = await requireAccount();
@@ -17,8 +20,7 @@ export default async function SetupPage({ searchParams }: { searchParams: Promis
   // Демо домаќините (поврзани со hosts.ts) немаат чекори за поставување.
   if (!host) redirect("/host/dashboard");
 
-  const db = await readDb();
-  const experience = db.experiences.find((e) => e.hostSlug === host.slug) ?? null;
+  const experience = await getFirstListing(host.slug);
 
   const profileDone = Boolean(host.profileCompletedAt);
   const experienceDone = Boolean(experience);

@@ -1,6 +1,5 @@
-import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
-import { categories, cities } from "@/data/classes";
+import { categories, cities } from "@/data/reference";
 import {
   CANCELLATION_MODES,
   CancellationMode,
@@ -9,8 +8,12 @@ import {
   getListingType,
 } from "@/data/listing-types";
 import { getAccount, sameOrigin } from "@/lib/auth";
-import { Experience, mutate, readDb } from "@/lib/db";
+import { getDynamicHost } from "@/lib/host-directory";
 import { experiencePhotoKey, listPhotos, prepareImages, savePhotos } from "@/lib/photos";
+import { UnknownReferenceError } from "@/server/modules/hosts/types";
+import { getFirstListing, saveListing } from "@/server/modules/listings/service";
+import type { ListingInput } from "@/server/modules/listings/types";
+import { uuidv7 } from "@/server/platform/ids.mjs";
 
 const MAX_PHOTOS = 12;
 
@@ -46,7 +49,7 @@ export async function POST(req: Request) {
   }
 
   // Полињата зависат од типот. Непотребните се отфрлаат.
-  const extra: Partial<Experience> = {};
+  const extra: Partial<ListingInput> = {};
 
   if (listing.kind !== "product") {
     // Траење: часови + минути (празно значи 0).
@@ -109,13 +112,12 @@ export async function POST(req: Request) {
   }
 
   // Едно прво искуство по домаќин: ако веќе постои, се менува.
-  const db = await readDb();
-  const host = db.hosts.find((h) => h.slug === account.hostSlug);
+  const host = await getDynamicHost(account.hostSlug);
   if (!host) return fail("Овој профил не може да создава искуства.", 403);
   if (!host.profileCompletedAt) return fail("Прво завршете го профилот (чекор 1).", 403);
 
-  const existing = db.experiences.find((e) => e.hostSlug === account.hostSlug);
-  const id = existing?.id ?? randomBytes(4).toString("hex");
+  const existing = await getFirstListing(account.hostSlug);
+  const id = existing?.id ?? uuidv7(); // фотографиите се чуваат под клуч exp-<id>
   const key = experiencePhotoKey(id);
 
   const files = form.getAll("photos").filter((f): f is File => f instanceof File && f.size > 0);
@@ -125,35 +127,27 @@ export async function POST(req: Request) {
     if ("error" in prepared) return fail(prepared.error);
   }
 
-  const now = new Date().toISOString();
-  await mutate((d) => {
-    const base = {
+  // Сервисот ги заменува полињата што зависат од типот (старите стануваат празни), а статусот,
+  // slug-от и достапноста од чекор 3 остануваат.
+  let saved;
+  try {
+    saved = await saveListing(account.hostSlug, {
+      id,
       type: listing.id,
       title,
       category,
       description,
       price,
       ...extra,
-      updatedAt: now,
-    };
-    const current = d.experiences.find((e) => e.hostSlug === account.hostSlug);
-    if (current) {
-      // Заменување на целиот запис, за да не остане старо поле од друг тип.
-      // availability е од чекор 3 и мора да се зачува.
-      const { id: keepId, hostSlug, createdAt, availability, visibility } = current;
-      Object.keys(current).forEach((k) => delete (current as Record<string, unknown>)[k]);
-      Object.assign(current, {
-        id: keepId,
-        hostSlug,
-        createdAt,
-        ...(availability ? { availability } : {}),
-        ...(visibility ? { visibility } : {}),
-        ...base,
-      });
-    } else {
-      d.experiences.push({ id, hostSlug: account.hostSlug, createdAt: now, ...base } as Experience);
+    });
+  } catch (error) {
+    if (error instanceof UnknownReferenceError) {
+      console.error("experience save failed:", error.message);
+      return fail("Базата не е подготвена (недостасуваат категории или градови). Извршете „npm run db:seed“.", 500);
     }
-  });
+    throw error;
+  }
+  if (!saved) return fail("Овој профил не може да создава искуства.", 403);
 
   if (prepared && "items" in prepared) await savePhotos(key, prepared.items);
 

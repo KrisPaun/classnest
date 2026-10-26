@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1792397649407,
+      "tag": "0000_funny_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1792400642884,
+      "tag": "0001_damp_justice",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1792401032775,
+      "tag": "0002_serious_vin_gonzales",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1792414972057,
+      "tag": "0003_jazzy_prima",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1792416211200,
+      "tag": "0004_neat_loners",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1792418239641,
+      "tag": "0005_absurd_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1792495719749,
+      "tag": "0006_misty_santa_claus",
+      "breakpoints": true
+    }
+  ]
+}

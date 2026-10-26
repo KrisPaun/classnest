@@ -7,20 +7,37 @@
     "build": "next build",
     "start": "next start",
     "seed:photos": "node scripts/seed-photos.mjs",
-    "host:create": "node scripts/create-host-account.mjs"
+    "test": "vitest run",
+    "db:up": "docker compose -f docker-compose.dev.yml up -d --wait db",
+    "db:down": "docker compose -f docker-compose.dev.yml down",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "db:seed": "node scripts/db-seed.mjs",
+    "db:seed:demo": "node scripts/seed-demo.mjs",
+    "demo:claim": "node scripts/claim-demo-host.mjs",
+    "admin:role": "node scripts/admin-role.mjs",
+    "listing:review": "node scripts/listing-review.mjs",
+    "db:import-accounts": "node scripts/import-json-accounts.mjs",
+    "db:import-hosts": "node scripts/import-json-hosts.mjs",
+    "db:import-experiences": "node scripts/import-json-experiences.mjs"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "mysql2": "^3.24.6",
     "next": "^15.5.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "drizzle-kit": "^0.31.11",
     "postcss": "^8.5.0",
     "tailwindcss": "^4.1.0",
-    "typescript": "^5.8.0"
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.12"
   }
 }

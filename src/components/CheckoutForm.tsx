@@ -27,16 +27,16 @@ export default function CheckoutForm({ slug, date, people }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="text-sm font-medium">Име и презиме</label>
-        <input name="name" required className={field} />
+        <label htmlFor="checkout-name" className="text-sm font-medium">Име и презиме</label>
+        <input id="checkout-name" name="name" autoComplete="name" required className={field} />
       </div>
       <div>
-        <label className="text-sm font-medium">Е-пошта</label>
-        <input name="email" type="email" required className={field} />
+        <label htmlFor="checkout-email" className="text-sm font-medium">Е-пошта</label>
+        <input id="checkout-email" name="email" type="email" autoComplete="email" required className={field} />
       </div>
       <div>
-        <label className="text-sm font-medium">Телефон</label>
-        <input name="phone" type="tel" className={field} />
+        <label htmlFor="checkout-phone" className="text-sm font-medium">Телефон</label>
+        <input id="checkout-phone" name="phone" type="tel" autoComplete="tel" className={field} />
       </div>
       <div className="rounded-xl border border-dashed border-line p-3 text-sm text-muted">
         💳 Плаќањето (CaSys) ќе биде додадено во следната фаза. Во демо верзијата не се наплатува.

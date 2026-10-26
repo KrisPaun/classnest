@@ -9,7 +9,6 @@ const ROOT = path.join(process.cwd(), "uploads");
 
 export const MAX_PHOTOS_PER_CLASS = 12;
 export const MAX_PROFILE_PHOTOS = 12;
-export const MAX_REGISTER_PHOTOS = 6;
 export const MAX_BYTES = 5 * 1024 * 1024;
 
 export const EXTENSIONS: Record<string, string> = {

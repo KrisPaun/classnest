@@ -1,14 +1,10 @@
 "use client";
 
-import { ChangeEvent, FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { cities } from "@/data/classes";
+import { cities } from "@/data/reference";
 import { Outlined, control } from "@/components/Outlined";
-
-const MAX_PHOTOS = 6;
-const MAX_BYTES = 5 * 1024 * 1024;
-const TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -21,30 +17,13 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export default function RegisterForm() {
   const router = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasBusiness, setHasBusiness] = useState(false);
 
-  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
-  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
-
-  const onPick = (e: ChangeEvent<HTMLInputElement>) => {
-    const picked = Array.from(e.currentTarget.files ?? []);
-    e.currentTarget.value = "";
-    const bad = picked.find((f) => !TYPES.includes(f.type) || f.size > MAX_BYTES);
-    if (bad) {
-      setError(`„${bad.name}“ мора да биде JPG, PNG или WebP до 5 MB.`);
-      return;
-    }
-    setError(null);
-    setFiles((prev) => [...prev, ...picked].slice(0, MAX_PHOTOS));
-  };
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    files.forEach((f) => form.append("photos", f));
 
     setBusy(true);
     setError(null);
@@ -150,39 +129,6 @@ export default function RegisterForm() {
           </Outlined>
         </div>
         <p className="text-sm text-muted">Двете полиња се по желба. Телефонот не се прикажува јавно.</p>
-      </Section>
-
-      <Section title="Фотографии (по желба)">
-        <p className="text-sm text-muted">
-          Вашата работилница, изработки или вие додека работите. До {MAX_PHOTOS} фотографии, JPG/PNG/WebP, до 5 MB.
-        </p>
-        {previews.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {previews.map((src, i) => (
-              <div key={src} className="relative overflow-hidden rounded-xl border border-line">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`Избрана фотографија ${i + 1}`} className="h-24 w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}
-                  className="absolute right-1 top-1 h-6 w-6 rounded-full bg-white/90 text-base leading-none hover:bg-white"
-                  aria-label="Отстрани"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        {files.length < MAX_PHOTOS && (
-          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line px-4 py-4 text-base hover:border-accent">
-            <span>📷</span>
-            <span>
-              Додај фотографии ({files.length}/{MAX_PHOTOS})
-            </span>
-            <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={onPick} className="hidden" />
-          </label>
-        )}
       </Section>
 
       {error && (

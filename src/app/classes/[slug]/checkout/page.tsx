@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CheckoutForm from "@/components/CheckoutForm";
-import { getClass } from "@/data/classes";
 import { formatDate, formatPrice } from "@/lib/format";
+import { gradientFor } from "@/lib/gradient";
+import { findListing } from "@/lib/public-listings";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function CheckoutPage({
   params,
@@ -12,10 +18,10 @@ export default async function CheckoutPage({
 }) {
   const { slug } = await params;
   const { date = "", people = "1" } = await searchParams;
-  const item = getClass(slug);
+  const item = await findListing(slug);
   if (!item || !date) notFound();
 
-  const count = Math.min(Math.max(Number(people) || 1, 1), item.maxPeople);
+  const count = Math.min(Math.max(Number(people) || 1, 1), item.maxPeople ?? 10);
 
   return (
     <div className="mx-auto grid max-w-4xl gap-10 px-4 py-10 md:grid-cols-[1fr_320px]">
@@ -26,8 +32,8 @@ export default async function CheckoutPage({
         </div>
       </div>
       <aside className="h-fit rounded-2xl border border-line bg-white p-5">
-        <div className={`flex h-28 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient} text-5xl`}>
-          {item.emoji}
+        <div className={`flex h-28 items-center justify-center rounded-xl bg-gradient-to-br ${gradientFor(item.slug)} text-5xl`}>
+          {item.category.emoji ?? "✨"}
         </div>
         <h2 className="mt-3 font-semibold">{item.title}</h2>
         <p className="mt-1 text-sm text-muted">{formatDate(date)}</p>

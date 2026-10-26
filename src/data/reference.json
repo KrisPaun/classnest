@@ -1,0 +1,17 @@
+{
+  "cities": [
+    { "slug": "skopje", "name": "Скопје", "lat": 41.9981, "lng": 21.4254 },
+    { "slug": "ohrid", "name": "Охрид", "lat": 41.1231, "lng": 20.8016 },
+    { "slug": "bitola", "name": "Битола", "lat": 41.0297, "lng": 21.3292 }
+  ],
+  "categories": [
+    { "slug": "gotvenje", "name": "Готвење", "emoji": "🍝", "sortOrder": 1 },
+    { "slug": "keramika", "name": "Керамика", "emoji": "🏺", "sortOrder": 2 },
+    { "slug": "slikanje", "name": "Сликање", "emoji": "🎨", "sortOrder": 3 },
+    { "slug": "vino", "name": "Вино и храна", "emoji": "🍷", "sortOrder": 4 },
+    { "slug": "muzika", "name": "Музика", "emoji": "🎸", "sortOrder": 5 },
+    { "slug": "fotografija", "name": "Фотографија", "emoji": "📷", "sortOrder": 6 },
+    { "slug": "cvekjarstvo", "name": "Цвеќарство", "emoji": "💐", "sortOrder": 7 },
+    { "slug": "zanaeti", "name": "Занает", "emoji": "🧵", "sortOrder": 8 }
+  ]
+}

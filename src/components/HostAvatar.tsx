@@ -1,4 +1,4 @@
-import { Host } from "@/data/hosts";
+import { gradientFor } from "@/lib/gradient";
 import { avatarKey, listPhotoUrls } from "@/lib/photos";
 
 const sizes = {
@@ -12,7 +12,7 @@ export default async function HostAvatar({
   host,
   size = "md",
 }: {
-  host: Host;
+  host: { slug: string; name: string };
   size?: keyof typeof sizes;
 }) {
   const urls = await listPhotoUrls(avatarKey(host.slug));
@@ -31,7 +31,7 @@ export default async function HostAvatar({
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-semibold text-white ${host.gradient} ${sizes[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-semibold text-white ${gradientFor(host.slug)} ${sizes[size]}`}
       aria-hidden
     >
       {host.name[0]}

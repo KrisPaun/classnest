@@ -2,8 +2,11 @@ node_modules
 .next
 out
 .env*
+!.env.example
 .DS_Store
 .claude/
 .idea/
 uploads
 .data
+test-output.txt
+uploads.bak

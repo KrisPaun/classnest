@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { categories, cities } from "@/data/classes";
+import { categories, cities } from "@/data/reference";
 import { Outlined, control } from "@/components/Outlined";
 import {
   CancellationMode,

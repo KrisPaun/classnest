@@ -1,21 +1,20 @@
+import type { Metadata } from "next";
 import SearchForm from "@/components/SearchForm";
 import ClassCard from "@/components/ClassCard";
-import { classes } from "@/data/classes";
+import { findListings } from "@/lib/public-listings";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Сите искуства",
+  description: "Работилници и искуства со локални мајстори во Македонија: готвење, керамика, вино, сликање и повеќе.",
+};
 
 type SearchParams = Promise<{ q?: string; category?: string; city?: string }>;
 
 export default async function ClassesPage({ searchParams }: { searchParams: SearchParams }) {
   const { q = "", category = "", city = "" } = await searchParams;
-  const needle = q.trim().toLowerCase();
-
-  const results = classes.filter(
-    (c) =>
-      (!category || c.category === category) &&
-      (!city || c.city === city) &&
-      (!needle ||
-        c.title.toLowerCase().includes(needle) ||
-        c.description.toLowerCase().includes(needle)),
-  );
+  const results = await findListings({ q, category, city });
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">

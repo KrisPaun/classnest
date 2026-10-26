@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import LoginForm from "@/components/LoginForm";
-import { getAccount } from "@/lib/auth";
+import { getAccountSafe } from "@/lib/auth";
+
+export const metadata: Metadata = { title: "Најава", robots: { index: false, follow: false } };
 
 export default async function LoginPage() {
-  if (await getAccount()) redirect("/host/dashboard");
+  if (await getAccountSafe()) redirect("/host/dashboard");
 
   return (
     <div className="mx-auto max-w-md px-4 py-12">

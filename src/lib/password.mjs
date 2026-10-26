@@ -1,5 +1,5 @@
 // Хеширање на лозинки со вграден scrypt (без надворешни пакети).
-// Го користат и апликацијата и scripts/create-host-account.mjs.
+// Го користат апликацијата и скриптите.
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 
 const KEY_LEN = 64;
